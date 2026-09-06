@@ -68,7 +68,7 @@ import NotesListView from '@/components/ListViews/NotesListView.vue'
 import TatvaNoteModal from '@/tatva/NoteModal.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import { usersStore } from '@/stores/users'
-import { formatDate, timeAgo } from '@/utils'
+import { formatListDate } from '@/utils'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
 import { ref, computed, watch } from 'vue'
 
@@ -104,20 +104,11 @@ function parseRows(list, columns = []) {
       _rows[row] = note[row]
 
       let fieldType = columns?.find((col) => col.key == row)?.type
-      if (
-        fieldType &&
-        ['Date', 'Datetime'].includes(fieldType) &&
-        !['modified', 'creation'].includes(row)
-      ) {
-        _rows[row] = formatDate(note[row], '', true, fieldType == 'Datetime')
+      if (fieldType && ['Date', 'Datetime'].includes(fieldType)) {
+        _rows[row] = formatListDate(note[row], fieldType == 'Datetime')
       }
 
-      if (['modified', 'creation'].includes(row)) {
-        _rows[row] = {
-          label: formatDate(note[row]),
-          timeAgo: __(timeAgo(note[row])),
-        }
-      } else if (row === 'owner') {
+      if (row === 'owner') {
         _rows[row] = {
           label: note.owner && getUser(note.owner).full_name,
           ...(note.owner && getUser(note.owner)),

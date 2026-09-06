@@ -1,4 +1,4 @@
-import { formatDate, timeAgo } from '@/utils'
+import { formatListDate } from '@/utils'
 import { getMeta } from '@/stores/meta'
 
 const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
@@ -32,17 +32,12 @@ export function getCallLogDetail(row, log, columns = []) {
       label: statusLabelMap[log.status],
       color: statusColorMap[log.status],
     }
-  } else if (['modified', 'creation'].includes(row)) {
-    return {
-      label: formatDate(log[row]),
-      timeAgo: __(timeAgo(log[row])),
-    }
   }
 
   let fieldType = columns?.find((col) => (col.key || col.value) == row)?.type
 
   if (fieldType && ['Date', 'Datetime'].includes(fieldType)) {
-    return formatDate(log[row], '', true, fieldType == 'Datetime')
+    return formatListDate(log[row], fieldType == 'Datetime')
   }
 
   if (fieldType && fieldType == 'Currency') {

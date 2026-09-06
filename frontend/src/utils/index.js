@@ -33,6 +33,19 @@ export function formatTime(seconds) {
   return formattedTime.trim()
 }
 
+// TATVA: a LIST CELL's date — the site's own format, to the MINUTE. Seconds are noise in a column,
+// and this is the one reader every list view shares so they cannot drift apart on precision.
+// `getFormat` stays the single place that knows `sysdefaults`; this asks it for the format it would
+// have used and drops the seconds, which is a no-op on a date-only column. DISPLAY ONLY — every
+// filter, sort and comparison runs on the raw value the API returned, never on this string.
+export function formatListDate(value, isDatetime = false) {
+  if (!value) return ''
+  return formatDate(
+    value,
+    getFormat(null, '', true, isDatetime, false).replace(':ss', ''),
+  )
+}
+
 export function formatDate(date, format, onlyDate = false, onlyTime = false) {
   if (!date) return ''
   format = getFormat(date, format, onlyDate, onlyTime, false)

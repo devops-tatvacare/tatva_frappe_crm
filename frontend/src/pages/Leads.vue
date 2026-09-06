@@ -90,8 +90,6 @@
         <div
           v-if="
             [
-              'modified',
-              'creation',
               'first_response_time',
               'first_responded_on',
               'response_by',
@@ -162,8 +160,6 @@
         <div
           v-if="
             [
-              'modified',
-              'creation',
               'first_response_time',
               'first_responded_on',
               'response_by',
@@ -291,7 +287,7 @@ import { usersStore } from '@/stores/users'
 import { statusesStore } from '@/stores/statuses'
 import { callEnabled } from '@/composables/telephony'
 import { useBroadcast } from '@/composables/useBroadcast'
-import { formatDate, timeAgo, website, formatTime } from '@/utils'
+import { formatDate, formatListDate, timeAgo, website, formatTime } from '@/utils'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
 import { Avatar, Tooltip, Dropdown } from 'frappe-ui'
 import { useRoute } from 'vue-router'
@@ -424,12 +420,8 @@ function parseRows(rows, columns = []) {
         type
       ]
 
-      if (
-        fieldType &&
-        ['Date', 'Datetime'].includes(fieldType) &&
-        !['modified', 'creation'].includes(row)
-      ) {
-        _rows[row] = formatDate(lead[row], '', true, fieldType == 'Datetime')
+      if (fieldType && ['Date', 'Datetime'].includes(fieldType)) {
+        _rows[row] = formatListDate(lead[row], fieldType == 'Datetime')
       }
 
       if (fieldType && fieldType == 'Currency') {
@@ -492,11 +484,6 @@ function parseRows(rows, columns = []) {
           image: getUser(user).user_image,
           label: getUser(user).full_name,
         }))
-      } else if (['modified', 'creation'].includes(row)) {
-        _rows[row] = {
-          label: formatDate(lead[row]),
-          timeAgo: __(timeAgo(lead[row])),
-        }
       } else if (
         ['first_response_time', 'first_responded_on', 'response_by'].includes(
           row,

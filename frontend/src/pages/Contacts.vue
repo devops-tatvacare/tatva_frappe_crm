@@ -70,7 +70,7 @@ import EmptyState from '@/components/ListViews/EmptyState.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import { getMeta } from '@/stores/meta'
 import { organizationsStore } from '@/stores/organizations.js'
-import { formatDate, timeAgo } from '@/utils'
+import { formatListDate } from '@/utils'
 import { ref, computed } from 'vue'
 
 const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
@@ -103,12 +103,8 @@ const rows = computed(() => {
         (col) => (col.key || col.value) == row,
       )?.type
 
-      if (
-        fieldType &&
-        ['Date', 'Datetime'].includes(fieldType) &&
-        !['modified', 'creation'].includes(row)
-      ) {
-        _rows[row] = formatDate(contact[row], '', true, fieldType == 'Datetime')
+      if (fieldType && ['Date', 'Datetime'].includes(fieldType)) {
+        _rows[row] = formatListDate(contact[row], fieldType == 'Datetime')
       }
 
       if (fieldType && fieldType == 'Currency') {
@@ -133,11 +129,6 @@ const rows = computed(() => {
         _rows[row] = {
           label: contact.company_name,
           logo: getOrganization(contact.company_name)?.organization_logo,
-        }
-      } else if (['modified', 'creation'].includes(row)) {
-        _rows[row] = {
-          label: formatDate(contact[row]),
-          timeAgo: __(timeAgo(contact[row])),
         }
       }
     })

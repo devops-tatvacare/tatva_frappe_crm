@@ -66,7 +66,7 @@ import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import OrganizationsListView from '@/components/ListViews/OrganizationsListView.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import { getMeta } from '@/stores/meta'
-import { formatDate, timeAgo, website } from '@/utils'
+import { formatListDate, website } from '@/utils'
 import { ref, computed } from 'vue'
 import EmptyState from '../components/ListViews/EmptyState.vue'
 
@@ -98,17 +98,8 @@ const rows = computed(() => {
         (col) => (col.key || col.value) == row,
       )?.type
 
-      if (
-        fieldType &&
-        ['Date', 'Datetime'].includes(fieldType) &&
-        !['modified', 'creation'].includes(row)
-      ) {
-        _rows[row] = formatDate(
-          organization[row],
-          '',
-          true,
-          fieldType == 'Datetime',
-        )
+      if (fieldType && ['Date', 'Datetime'].includes(fieldType)) {
+        _rows[row] = formatListDate(organization[row], fieldType == 'Datetime')
       }
 
       if (fieldType && fieldType == 'Currency') {
@@ -130,11 +121,6 @@ const rows = computed(() => {
         }
       } else if (row === 'website') {
         _rows[row] = website(organization.website)
-      } else if (['modified', 'creation'].includes(row)) {
-        _rows[row] = {
-          label: formatDate(organization[row]),
-          timeAgo: __(timeAgo(organization[row])),
-        }
       }
     })
     return _rows

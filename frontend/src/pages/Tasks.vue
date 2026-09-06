@@ -55,14 +55,6 @@
           />
         </div>
         <div
-          v-if="['modified', 'creation'].includes(titleField)"
-          class="truncate text-base"
-        >
-          <Tooltip :text="getRow(itemName, titleField).label">
-            <div>{{ getRow(itemName, titleField).timeAgo }}</div>
-          </Tooltip>
-        </div>
-        <div
           v-else-if="getRow(itemName, titleField).label"
           class="truncate text-base"
         >
@@ -93,14 +85,6 @@
             :label="getRow(itemName, fieldName).full_name"
             size="sm"
           />
-        </div>
-        <div
-          v-if="['modified', 'creation'].includes(fieldName)"
-          class="truncate text-base"
-        >
-          <Tooltip :text="getRow(itemName, fieldName).label">
-            <div>{{ getRow(itemName, fieldName).timeAgo }}</div>
-          </Tooltip>
         </div>
         <!-- TATVA: the SAME renderer the list column uses, on the same server stamp. -->
         <div v-else-if="cardBadge(fieldName, itemName)">
@@ -229,8 +213,8 @@ import { linkTitleFor } from '@/tatva/linkTitle' // TATVA: the one reader of the
 import { derivedBadge } from '@/tatva/derivedField' // TATVA: the ONE renderer for a derived cell
 import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
-import { formatDate, timeAgo } from '@/utils'
-import { Badge, Tooltip, Avatar, TextEditor, Dropdown, call } from 'frappe-ui'
+import { formatDate, formatListDate } from '@/utils'
+import { Badge, Avatar, TextEditor, Dropdown, call } from 'frappe-ui'
 import { computed, ref, h } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -373,9 +357,9 @@ function parseRows(rows, columns = []) {
       if (
         fieldType &&
         ['Date', 'Datetime'].includes(fieldType) &&
-        !['modified', 'creation', 'due_date'].includes(row)
+        row !== 'due_date'
       ) {
-        _rows[row] = formatDate(task[row], '', true, fieldType == 'Datetime')
+        _rows[row] = formatListDate(task[row], fieldType == 'Datetime')
       }
 
       if (fieldType && fieldType == 'Currency') {
@@ -390,12 +374,7 @@ function parseRows(rows, columns = []) {
         _rows[row] = getFormattedPercent(row, task)
       }
 
-      if (['modified', 'creation'].includes(row)) {
-        _rows[row] = {
-          label: formatDate(task[row]),
-          timeAgo: __(timeAgo(task[row])),
-        }
-      } else if (row == 'assigned_to') {
+      if (row == 'assigned_to') {
         _rows[row] = {
           label: task.assigned_to && getUser(task.assigned_to).full_name,
           ...(task.assigned_to && getUser(task.assigned_to)),

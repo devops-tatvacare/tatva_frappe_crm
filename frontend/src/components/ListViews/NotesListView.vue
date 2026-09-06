@@ -58,25 +58,7 @@
         </template>
         <template #default="{ label }">
           <div
-            v-if="['modified', 'creation'].includes(column.key)"
-            class="truncate text-base"
-            @click="
-              (event) =>
-                emit('applyFilter', {
-                  event,
-                  idx,
-                  column,
-                  item,
-                  firstColumn: columns[0],
-                })
-            "
-          >
-            <Tooltip :text="item.label">
-              <div>{{ item.timeAgo }}</div>
-            </Tooltip>
-          </div>
-          <div
-            v-else-if="column.type === 'Text Editor'"
+            v-if="column.type === 'Text Editor'"
             class="truncate text-base h-4 [&>p]:truncate"
             v-html="sanitizeHTML(item)"
           />
@@ -156,7 +138,6 @@ import {
   ListRowItem,
   ListFooter,
   Dropdown,
-  Tooltip,
   FormControl,
 } from 'frappe-ui'
 import { ref, computed, watch } from 'vue'

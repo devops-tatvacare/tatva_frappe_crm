@@ -104,8 +104,6 @@
           <div
             v-if="
               [
-                'modified',
-                'creation',
                 'first_response_time',
                 'first_responded_on',
                 'response_by',

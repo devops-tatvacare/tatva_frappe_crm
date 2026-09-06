@@ -55,25 +55,7 @@
           </div>
         </template>
         <template #default="{ label }">
-          <div
-            v-if="['modified', 'creation'].includes(column.key)"
-            class="truncate text-base"
-            @click="
-              (event) =>
-                emit('applyFilter', {
-                  event,
-                  idx,
-                  column,
-                  item,
-                  firstColumn: columns[0],
-                })
-            "
-          >
-            <Tooltip :text="item.label">
-              <div>{{ item.timeAgo }}</div>
-            </Tooltip>
-          </div>
-          <div v-else-if="column.key === 'status'" class="truncate text-base">
+          <div v-if="column.key === 'status'" class="truncate text-base">
             <Badge
               :variant="'subtle'"
               :theme="item.color"
@@ -202,7 +184,6 @@ import {
   ListSelectBanner,
   ListRowItem,
   ListFooter,
-  Tooltip,
   Dropdown,
 } from 'frappe-ui'
 import { sessionStore } from '@/stores/session'

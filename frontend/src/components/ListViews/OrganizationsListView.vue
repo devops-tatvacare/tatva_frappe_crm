@@ -55,25 +55,7 @@
           </div>
         </template>
         <template #default="{ label }">
-          <div
-            v-if="['modified', 'creation'].includes(column.key)"
-            class="truncate text-base"
-            @click="
-              (event) =>
-                emit('applyFilter', {
-                  event,
-                  idx,
-                  column,
-                  item,
-                  firstColumn: columns[0],
-                })
-            "
-          >
-            <Tooltip :text="item.label">
-              <div>{{ item.timeAgo }}</div>
-            </Tooltip>
-          </div>
-          <div v-else-if="column.type === 'Check'">
+          <div v-if="column.type === 'Check'">
             <FormControl
               type="checkbox"
               :modelValue="item"
@@ -171,7 +153,6 @@ import {
   ListSelectBanner,
   ListRowItem,
   ListFooter,
-  Tooltip,
   Dropdown,
 } from 'frappe-ui'
 import { sessionStore } from '@/stores/session'
