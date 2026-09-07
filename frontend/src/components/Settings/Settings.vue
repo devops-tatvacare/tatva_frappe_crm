@@ -165,8 +165,8 @@ const tabs = computed(() => {
           label: __('Invite User'),
           icon: 'user-plus',
           component: markRaw(InviteUserPage),
-          // TATVA: only a System Manager adds a person. `CRM Invitation` is admin-only on the server, so shown to a Sales Manager this page could only ever refuse them.
-          condition: () => surfaces.settings.platform,
+          // TATVA: a manager staffs their own team. `native_guards.crm_invite_by_email` admits a Sales Manager, and crm's own invite refuses them a manager role.
+          condition: () => isManager(),
         },
         {
           label: __('Sales Hierarchy'),
