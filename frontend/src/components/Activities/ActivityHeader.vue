@@ -126,12 +126,17 @@
       @click="showFilesUploader = true"
     />
     <!-- TATVA: WhatsApp split button — Send Template (primary) + dropdown (Send Message, Refresh History).
-         showWhatsappTemplates now opens our native TatvaWhatsAppTemplate (the crm selector is unwired). -->
+         showWhatsappTemplates now opens our native TatvaWhatsAppTemplate (the crm selector is unwired).
+         A refresh in flight greys BOTH halves through the native `disabled` prop, so the control reads as
+         one busy button — frappe-ui's own disabled variant does the colouring, nothing here does. It used
+         to pass `loading` to the chevron half alone, which dropped the icon and drew a spinner inside a
+         24px solid button while Send Template stayed live. -->
     <div v-else-if="title == 'WhatsApp'" class="flex items-center shrink-0">
       <Button
         variant="solid"
         class="rounded-br-none rounded-tr-none"
         :label="__('Send Template')"
+        :disabled="refreshingHistory"
         @click="showWhatsappTemplates = true"
       >
         <template #prefix>
@@ -142,8 +147,8 @@
         :options="whatsappActions"
         placement="bottom-end"
         :button="{
-          icon: refreshingHistory ? null : 'chevron-down',
-          loading: refreshingHistory,
+          icon: 'chevron-down',
+          disabled: refreshingHistory,
           variant: 'solid',
           class: '!w-6 justify-center rounded-bl-none rounded-tl-none border-l border-l-outline-white/30 px-0',
         }"

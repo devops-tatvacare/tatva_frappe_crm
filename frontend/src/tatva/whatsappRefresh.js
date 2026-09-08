@@ -41,7 +41,12 @@ function clearRunning(name) {
     clearTimeout(timers[name])
     delete timers[name]
   }
+  delete asked[name]
 }
+
+// The tab that CLICKED, so the acceptance toast follows the action. `started` reaches every watcher of
+// the lead — they need the disabled button, not a toast about a refresh they did not ask for.
+const asked = {}
 
 function markRunning(name) {
   running[name] = true
@@ -91,6 +96,12 @@ export function startTatvaWhatsAppRefresh(crmSocket) {
     if (!name) return
     if (payload.state === 'started') {
       markRunning(name)
+      // The ACCEPTANCE toast. The server emits `started` immediately after the job is enqueued, so this
+      // is the rep's confirmation that the work was taken — not that it finished. Without it a click on
+      // a slow provider looks like nothing happened, and the greyed-out button alone reads as a bug.
+      // Only the tab that asked is told: another rep watching the same lead gets the disabled button,
+      // which is the fact that concerns them, and not a toast about someone else's action.
+      if (asked[name]) toast.info(__('Refreshing WhatsApp history…'))
       return
     }
     if (payload.state !== 'finished') return  // an unknown state is not a completion
@@ -114,6 +125,7 @@ export async function refreshWhatsAppHistory(doctype, name) {
   if (running[name]) return
   // Optimistic: the button disables on click, not on the server's echo. `started` confirms it,
   // `finished` clears it, and the timeout covers a job that never reports at all.
+  asked[name] = true
   markRunning(name)
   try {
     await call('tatva_connect.api.whatsapp.refresh_messages_from_wati', {
